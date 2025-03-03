@@ -1,0 +1,1 @@
+A web-based tool for extracting, analyzing, and systematically improving AI prompts used with Claude and ChatGPT through structured feedback and iterative refinement.
