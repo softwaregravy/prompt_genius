@@ -12,7 +12,7 @@ This tool enables users to retrieve prompts from chat history, manually add prom
 
 The core function of the tool revolves around prompt extraction, refinement, and structured storage. To accomplish this, the following features will be implemented:
 
-- **Support for Claude and ChatGPT:** The tool will initially focus on Anthropic's Claude but will support OpenAI's ChatGPT shortly after. This ensures users can refine prompts for multiple AI models. Other providers may be added later.
+- **Support for Claude and ChatGPT:** The tool will initially focus on Anthropic's Claude with OpenAI's ChatGPT being added very soon after initial launch. This ensures users can refine prompts for multiple AI models. Other providers may be added later.
 - **Prompt Extraction from Chat History:** Users will be able to pull chat history from Claude and ChatGPT through their respective APIs. The system will extract the first message from each conversation as the initial prompt. Later, we will try to extract the prompt from the entire conversation.
 - **Manual Prompt Addition:** Users can manually add prompts, which will be processed in the same manner as extracted prompts to maintain uniformity.
 - **Scheduled and Manual Sync:** The system will automatically retrieve chat history from the last 24 hours at scheduled intervals. Additionally, a "Sync Now" button will allow users to manually fetch chat data for immediate processing during development and testing.
@@ -25,7 +25,7 @@ Once a prompt is extracted or added, the system will analyze it for usability an
 
 - **Focus on First Message in a Chat:** The system will initially extract only the first user message in each chat as a prompt. Future versions will support extracting mid-conversation prompts by identifying key transitions in the conversation.
 - **Sentiment Analysis on Responses:** Immediately following a prompt, the system will evaluate the sentiment of the next user message. Sentiment is scored on a scale of 1-5:
-  - **1-2:** Negative sentiment (e.g., "No, that’s wrong" or "That’s not what I meant")
+  - **1-2:** Negative sentiment (e.g., "No, that's wrong" or "That's not what I meant")
   - **3:** Neutral (e.g., no explicit feedback, just continuing the conversation)
   - **4-5:** Positive (e.g., "Great! Now do..." or "This is exactly what I needed")
 - **Handling No Feedback:** A neutral score (3) will be assigned if the system detects a new user message without explicit feedback. This is considered better than negative but not as strong as positive reinforcement.
@@ -36,7 +36,7 @@ To ensure consistency and usability, prompts will be transformed into a standard
 
 Each processed prompt will follow this format:
 
-1. **High-Level Task** - A concise one-sentence summary of the prompt’s goal.
+1. **High-Level Task** - A concise one-sentence summary of the prompt's goal.
 2. **Detailed Task** - A bullet list outlining key actions, considerations, or requirements.
 3. **Output Formatting** - A structured list specifying the expected format of the AI response.
 4. **Procedure Guidance** - A list detailing the steps the AI should take to complete the task correctly.
@@ -50,12 +50,13 @@ Each processed prompt will follow this format:
 To facilitate prompt refinement and categorization, all prompts will be stored in a PostgreSQL database with vector embeddings for similarity matching.
 
 - **Single Embedding Model:** Each prompt will be processed with a single embedding model to generate a vector representation for comparison.
-- **Similarity Threshold:** Prompts that share an 80% similarity (based on goal and topic, not structure) will be considered related.
+- **Similarity Threshold:** Prompts that share an 80% similarity (based on goal and topic, not structural similarity) will be considered related.
 - **Parent-Child Relationships:**
   - New prompts are compared to existing ones in the database.
   - If a sufficiently similar prompt exists, the new prompt is marked as a child.
   - Otherwise, the new prompt is stored as a standalone parent.
   - Users can manually adjust parent-child relationships in a review interface.
+  - The system will track whether a prompt has no parent by default or has been explicitly reviewed and set to have no parent.
 - **Versioning and Storage:**
   - **Original Prompt:** The raw extracted or manually entered prompt.
   - **Processed Prompt:** The structured version of the original prompt.
@@ -100,6 +101,7 @@ The application will provide a clear and structured UI to facilitate prompt revi
 - **Table View:**
   - Lists all recent prompts, their short names, and their parent relationships.
   - Allows users to review and assign parent-child relationships.
+  - Clearly indicates whether a prompt has no parent by default or has been explicitly reviewed and set to have no parent.
 - **Parent Selection View:**
   - Displays the full chat history where the prompt was extracted.
   - Shows top 5 matching candidates with similarity scores.
@@ -120,11 +122,12 @@ The application will provide a clear and structured UI to facilitate prompt revi
 
 ## Markdown & Standardization
 
-- **Raw Markdown Format:** All outputs will be generated as Markdown for easy copying and integration.
+- **Raw Markdown Format:** All outputs will be generated as Markdown for easy copying and integration. Prompts themselves will use Markdown formatting for headings and bullets.
 - **Standardized Terminology:**
   - **Parent Prompt:** The original evolving prompt.
   - **Child Prompt:** A variant used for refinement.
   - **Feedback Applied:** A flag indicating feedback has been integrated into the parent prompt.
+  - **Review Status:** Indication of whether parent-child relationships have been reviewed or are set by default.
 
 ## Deployment & Access
 
